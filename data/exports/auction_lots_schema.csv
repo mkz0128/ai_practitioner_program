@@ -1,0 +1,23 @@
+﻿column_name,data_type,description
+category,VARCHAR,拍品分類
+subcategory,VARCHAR,依品名規則整理的拍品細分類
+image_url,VARCHAR,拍品圖片網址
+title_zh,VARCHAR,中文品名
+era_or_artist,VARCHAR,年代或作者
+auction_house,VARCHAR,拍賣公司
+auction_event,VARCHAR,拍賣場次
+auction_date,DATE,拍賣日期
+auction_location,VARCHAR,拍賣地區
+lot_number,VARCHAR,同一場次內的 Lot 編號
+size_text,VARCHAR,尺寸原文
+estimate_low,BIGINT,最低估價（RMB）
+estimate_high,BIGINT,最高估價（RMB）
+sold_price,BIGINT,成交價；流拍與撤拍為 NULL
+currency,VARCHAR,固定為 RMB
+sale_status,VARCHAR,成交 / 流拍 / 撤拍
+lot_id,VARCHAR,內部使用的拍品全域唯一識別碼
+event_id,VARCHAR,內部使用的拍賣場次識別碼
+auction_house_id,VARCHAR,內部使用的拍賣公司識別碼
+artist_name,VARCHAR,可靠解析出的作者；無法辨識時為 NULL
+era_name,VARCHAR,故宮原始年代；來源缺漏時為 NULL
+attribution_status,VARCHAR,已解析作者 / 僅有年代 / 資料不詳 / 需要確認

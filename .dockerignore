@@ -1,0 +1,12 @@
+.tools/
+backend/state/
+backend/__pycache__/
+**/__pycache__/
+*.pyc
+.env
+.env.*
+!*.env.example
+key.txt
+*.sqlite
+*.sqlite3
+*.zip

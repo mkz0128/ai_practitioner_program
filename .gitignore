@@ -1,0 +1,21 @@
+.tools/
+**/__pycache__/
+*.pyc
+backend/state/
+.venv/
+.env
+.env.*
+!.env.example
+key.txt
+wsl2_setup.log
+wsl_install.log
+*.sqlite
+*.sqlite3
+*.zip
+# Machine-specific startup and WSL helper scripts are not part of the portable Docker handoff.
+start.bat
+backend/run_backend.ps1
+backend/setup_local.ps1
+enable_wsl2_admin.bat
+enable_wsl2_admin.ps1
+install_wsl_admin.bat

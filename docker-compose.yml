@@ -1,0 +1,15 @@
+services:
+  auction-agent:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid
+    volumes:
+      - auction-agent-state:/app/backend/state
+
+volumes:
+  auction-agent-state:

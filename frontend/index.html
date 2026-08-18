@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>古玩拍賣研究助手</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="對話側欄">
+        <div class="brand">
+          <div class="brand-mark">鑑</div>
+          <div>
+            <strong>古玩拍賣研究助手</strong>
+            <span>AUCTION AGENT</span>
+          </div>
+        </div>
+
+        <button id="new-chat" class="new-chat" type="button">
+          <span class="plus">＋</span> 開始新對話
+        </button>
+
+        <div class="sidebar-section">
+          <p class="section-label">目前對話</p>
+          <div id="conversation-label" class="conversation-label">
+            <span class="conversation-dot"></span>
+            <span>新的研究對話</span>
+          </div>
+        </div>
+
+        <div class="sidebar-spacer"></div>
+        <div class="sidebar-note">
+          <span class="status-dot"></span>
+          <div>
+            <strong id="service-label">本機 Agent</strong>
+            <span id="model-label">gpt-5.5 · DuckDB</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="chat-main">
+        <header class="chat-header">
+          <div>
+            <p class="eyebrow">COLLECTION RESEARCH</p>
+            <h1>拍賣研究對話</h1>
+            <p class="header-subtitle">直接提問，Agent 會依資料自行查詢與整理。</p>
+          </div>
+          <div class="header-actions">
+            <label class="debug-control"><input id="debug-mode" type="checkbox" checked /> 顯示分析步驟</label>
+            <div id="health-badge" class="health-badge"><span></span>連線檢查中</div>
+          </div>
+        </header>
+
+        <section id="messages" class="messages" aria-live="polite">
+          <div id="welcome" class="welcome">
+            <div class="welcome-icon">鑑</div>
+            <h2>今天想研究哪一批收藏品？</h2>
+            <p>你可以直接用自然語言追問，像跟研究助理聊天一樣。</p>
+            <div class="suggestions" aria-label="建議問題">
+              <button type="button" data-suggestion="比較五個類別的成交率，告訴我最高的是哪一類？">比較各類別成交率</button>
+              <button type="button" data-suggestion="2020 到 2025 年的成交總額有什麼變化？">查看年度成交趨勢</button>
+              <button type="button" data-suggestion="找出作者成交表現最好的前十名。">找出作者排名</button>
+            </div>
+          </div>
+        </section>
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+
+        <form id="composer" class="composer">
+          <textarea id="question" rows="1" autocomplete="off" placeholder="輸入你的問題…（Enter 送出，Shift + Enter 換行）"></textarea>
+          <button id="send" class="send-button" type="submit" aria-label="送出問題">
+            <span>送出</span><span class="send-arrow">↑</span>
+          </button>
+        </form>
+        <p class="composer-note">回答會使用專案資料庫；拍賣公司、價格與成交狀態是模擬資料。</p>
+      </main>
+    </div>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

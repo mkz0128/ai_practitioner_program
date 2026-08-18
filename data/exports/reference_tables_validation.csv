@@ -1,0 +1,14 @@
+﻿check,actual,expected,passed
+auction_houses_rows,15,15,True
+auction_events_orphans,0,0,True
+auction_lot_event_id_orphans,0,0,True
+auction_lot_house_id_orphans,0,0,True
+event_house_id_mismatch,0,0,True
+auction_events_unmatched_lots,0,0,True
+name_alias_duplicates,0,0,True
+exchange_rate_rows,13152,13152,True
+exchange_rate_dates,2192,2192,True
+exchange_rate_currencies,6,6,True
+exchange_rate_invalid,0,0,True
+carried_flag_mismatch,0,0,True
+auction_event_fx_missing,0,0,True

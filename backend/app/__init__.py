@@ -1,0 +1,1 @@
+"""Auction research assistant backend."""

@@ -1,0 +1,50 @@
+﻿table_name,table_description,column_order,column_name,data_type,nullable_in_database,nullable_by_business_rule,key_or_constraint,references,allowed_values,null_rule,description
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,1,category,VARCHAR,否,否,,,陶瓷器｜銅器｜玉器｜繪畫｜法書,依目前資料規格必填，不應為 NULL。,拍品分類
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,2,subcategory,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,依品名規則整理的拍品細分類
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,3,image_url,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍品圖片網址
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,4,title_zh,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,中文品名
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,5,era_or_artist,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,年代或作者
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,6,auction_house,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣公司
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,7,auction_event,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣場次
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,8,auction_date,DATE,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣日期
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,9,auction_location,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣地區
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,10,lot_number,VARCHAR,否,否,複合唯一鍵之一：event_id + lot_number,,,依目前資料規格必填，不應為 NULL。,同一場次內的 Lot 編號
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,11,size_text,VARCHAR,否,否,,,,故宮來源沒有尺寸時可為空字串。,尺寸原文
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,12,estimate_low,BIGINT,否,否,,,,依目前資料規格必填，不應為 NULL。,最低估價（RMB）
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,13,estimate_high,BIGINT,否,否,,,,依目前資料規格必填，不應為 NULL。,最高估價（RMB）
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,14,sold_price,BIGINT,是,是,,,,成交時必填；流拍或撤拍時必須為 NULL。,成交價；流拍與撤拍為 NULL
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,15,currency,VARCHAR,否,否,,,RMB,依目前資料規格必填，不應為 NULL。,固定為 RMB
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,16,sale_status,VARCHAR,否,否,,,成交｜流拍｜撤拍,依目前資料規格必填，不應為 NULL。,成交 / 流拍 / 撤拍
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,17,lot_id,VARCHAR,否,否,UNIQUE；內部全域識別碼,,,依目前資料規格必填，不應為 NULL。,內部使用的拍品全域唯一識別碼
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,18,event_id,VARCHAR,否,否,複合唯一鍵之一：event_id + lot_number,auction_events.event_id（邏輯外鍵；由驗證檔檢查）,,依目前資料規格必填，不應為 NULL。,內部使用的拍賣場次識別碼
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,19,auction_house_id,VARCHAR,否,否,,auction_houses.auction_house_id（邏輯外鍵；由驗證檔檢查）,,依目前資料規格必填，不應為 NULL。,內部使用的拍賣公司識別碼
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,20,artist_name,VARCHAR,是,是,,,,僅在高可信度解析出作者時填值，否則為 NULL。,可靠解析出的作者；無法辨識時為 NULL
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,21,era_name,VARCHAR,是,是,,,,故宮來源年代缺漏或不詳時為 NULL。,故宮原始年代；來源缺漏時為 NULL
+auction_lots,拍賣年鑑式拍品主表；前 16 欄為展示欄位，後 6 欄供內部關聯與分析。,22,attribution_status,VARCHAR,否,否,,,已解析作者｜僅有年代｜資料不詳｜需要確認,依目前資料規格必填，不應為 NULL。,已解析作者 / 僅有年代 / 資料不詳 / 需要確認
+auction_events,拍賣場次主檔；每個 event_id 代表一個拍賣公司、日期、地區與分類的場次。,1,event_id,VARCHAR,否,否,PRIMARY KEY,,,依目前資料規格必填，不應為 NULL。,內部使用的拍賣場次唯一識別碼。
+auction_events,拍賣場次主檔；每個 event_id 代表一個拍賣公司、日期、地區與分類的場次。,2,auction_house_id,VARCHAR,否,否,,auction_houses.auction_house_id,,依目前資料規格必填，不應為 NULL。,舉辦場次的拍賣公司識別碼。
+auction_events,拍賣場次主檔；每個 event_id 代表一個拍賣公司、日期、地區與分類的場次。,3,auction_event,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣場次名稱。
+auction_events,拍賣場次主檔；每個 event_id 代表一個拍賣公司、日期、地區與分類的場次。,4,auction_date,DATE,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣日期。
+auction_events,拍賣場次主檔；每個 event_id 代表一個拍賣公司、日期、地區與分類的場次。,5,auction_location,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣地區。
+auction_events,拍賣場次主檔；每個 event_id 代表一個拍賣公司、日期、地區與分類的場次。,6,category,VARCHAR,否,否,,,陶瓷器｜銅器｜玉器｜繪畫｜法書,依目前資料規格必填，不應為 NULL。,本場次對應的拍品大分類。
+auction_events,拍賣場次主檔；每個 event_id 代表一個拍賣公司、日期、地區與分類的場次。,7,data_status,VARCHAR,否,否,,,模擬,依目前資料規格必填，不應為 NULL。,標示場次資料為模擬或真實。
+auction_houses,拍賣公司主檔；保存標準公司名稱與主要所在地。,1,auction_house_id,VARCHAR,否,否,PRIMARY KEY,,,依目前資料規格必填，不應為 NULL。,拍賣公司唯一識別碼。
+auction_houses,拍賣公司主檔；保存標準公司名稱與主要所在地。,2,auction_house_name,VARCHAR,否,否,UNIQUE,,,依目前資料規格必填，不應為 NULL。,拍賣公司的標準中文名稱。
+auction_houses,拍賣公司主檔；保存標準公司名稱與主要所在地。,3,main_city,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣公司主要城市。
+auction_houses,拍賣公司主檔；保存標準公司名稱與主要所在地。,4,country_region,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,拍賣公司主要國家或地區。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,1,rate_date,DATE,否,否,複合主鍵之一：rate_date + from_currency + to_currency,,,依目前資料規格必填，不應為 NULL。,此匯率適用的日期。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,2,source_date,DATE,否,否,,,,依目前資料規格必填，不應為 NULL。,實際取得匯率的香港金融管理局資料日期。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,3,from_currency,VARCHAR,否,否,複合主鍵之一：rate_date + from_currency + to_currency,,USD｜HKD｜GBP｜EUR｜JPY｜TWD,依目前資料規格必填，不應為 NULL。,換算前幣別。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,4,to_currency,VARCHAR,否,否,複合主鍵之一：rate_date + from_currency + to_currency,,RMB,依目前資料規格必填，不應為 NULL。,換算後幣別，固定為 RMB。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,5,rate_to_rmb,"DECIMAL(20,10)",否,否,,,,依目前資料規格必填，不應為 NULL。,一單位原幣可換得的人民幣金額。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,6,source_hkd_per_unit,"DECIMAL(20,10)",否,否,,,,依目前資料規格必填，不應為 NULL。,來源資料中的一單位原幣兌港幣值。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,7,cny_hkd_per_unit,"DECIMAL(20,10)",否,否,,,,依目前資料規格必填，不應為 NULL。,來源資料中的一人民幣兌港幣值。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,8,is_carried_forward,BOOLEAN,否,否,,,true｜false,依目前資料規格必填，不應為 NULL。,是否因非發布日而沿用最近可得匯率。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,9,source_name,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,匯率來源機構。
+exchange_rates,2020–2025 每日外幣兌人民幣匯率；非發布日沿用最近可得來源日。,10,source_url,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,匯率來源網址。
+name_aliases,拍賣公司名稱對應表；將中英文或不同寫法正規化為標準名稱。,1,alias_id,VARCHAR,否,否,PRIMARY KEY,,,依目前資料規格必填，不應為 NULL。,名稱對應紀錄的唯一識別碼。
+name_aliases,拍賣公司名稱對應表；將中英文或不同寫法正規化為標準名稱。,2,entity_type,VARCHAR,否,否,複合唯一鍵之一：entity_type + alias_name,,auction_house,依目前資料規格必填，不應為 NULL。,別名所屬實體類型。
+name_aliases,拍賣公司名稱對應表；將中英文或不同寫法正規化為標準名稱。,3,alias_name,VARCHAR,否,否,複合唯一鍵之一：entity_type + alias_name,,,依目前資料規格必填，不應為 NULL。,可能出現在輸入資料或問題中的名稱寫法。
+name_aliases,拍賣公司名稱對應表；將中英文或不同寫法正規化為標準名稱。,4,canonical_name,VARCHAR,否,否,,,,依目前資料規格必填，不應為 NULL。,正規化後的標準名稱。
+name_aliases,拍賣公司名稱對應表；將中英文或不同寫法正規化為標準名稱。,5,auction_house_id,VARCHAR,否,否,,auction_houses.auction_house_id,,依目前資料規格必填，不應為 NULL。,對應的拍賣公司識別碼。
+name_aliases,拍賣公司名稱對應表；將中英文或不同寫法正規化為標準名稱。,6,language,VARCHAR,否,否,,,zh｜en,依目前資料規格必填，不應為 NULL。,名稱寫法的語言。

@@ -127,7 +127,7 @@ class BackendSmokeTests(unittest.TestCase):
         client = TestClient(app)
         page = client.get("/ui/")
         self.assertEqual(page.status_code, 200)
-        self.assertIn("古玩拍賣研究助手", page.text)
+        self.assertIn("AI 藝術品拍賣資料查詢 Agent", page.text)
 
     def test_openai_mode_without_key_is_explained(self):
         settings = Settings(

@@ -298,7 +298,7 @@ class ChatOrchestrator:
             )
 
         agent = Agent(
-            name="Auction Research Assistant",
+            name="AI 藝術品拍賣資料查詢 Agent",
             model=self.settings.openai_model,
             instructions=(
                 "你是藝術品拍賣資料研究助手。只能回答藝術品拍賣資料問題。"

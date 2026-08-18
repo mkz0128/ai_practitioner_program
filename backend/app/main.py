@@ -26,7 +26,7 @@ database = ReadOnlyDuckDB(settings, catalog)
 store = ConversationStore(settings.conversation_db_path)
 orchestrator = ChatOrchestrator(settings, catalog, database, store)
 
-app = FastAPI(title="Auction Research Assistant API", version="0.1.0")
+app = FastAPI(title="AI 藝術品拍賣資料查詢 Agent API", version="0.1.0")
 frontend_directory = settings.project_root / "frontend"
 if frontend_directory.exists():
     app.mount("/ui", StaticFiles(directory=frontend_directory, html=True), name="ui")

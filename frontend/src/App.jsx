@@ -1,327 +1,308 @@
-import { useEffect, useRef, useState } from "react";
-import { sendChat } from "./api.js";
-import ResponseBlocks from "./components/ResponseBlocks.jsx";
+import { useMemo, useState } from "react";
 
+const asset = (name) => `${import.meta.env.BASE_URL}figma-assets/${name}`;
+
+const categories = [
+  "全部",
+  "水墨花鳥",
+  "山水",
+  "水墨",
+  "人物",
+  "陶瓷",
+  "書法",
+  "玉器",
+];
 const suggestions = [
-  ["比較各類別成交率", "比較五個類別的成交率，告訴我最高的是哪一類？"],
-  ["查看年度成交趨勢", "2020 到 2025 年的成交總額有什麼變化？"],
-  ["找出作者排名", "找出作者成交表現最好的前十名。"],
+  "齊白石蝦圖 1940 年代",
+  "宋代青瓷 300 萬以上",
+  "張大千潑墨山水",
+];
+const steps = [
+  "1. 瀏覽拍品",
+  "2. AI 搜尋",
+  "3. 查看結果",
+  "4. 拍品詳情",
+  "5. 訂閱解鎖",
 ];
 
-function InlineAnswer({ value }) {
-  const tokens = String(value || "目前沒有文字答案。").split(
-    /(\*\*[^*]+\*\*|`[^`]+`)/g,
-  );
+const lots = [
+  {
+    title: "花鳥四屏",
+    artist: "吳昌碩",
+    era: "民國初期",
+    category: "水墨花鳥",
+    price: "NT$ 38 萬–NT$ 48 萬",
+    house: "中國嘉德",
+    year: "2022",
+    image: asset("artwork-3.jpeg"),
+  },
+  {
+    title: "山水長卷",
+    artist: "張大千",
+    era: "1960 年代",
+    category: "山水",
+    price: "NT$ 120 萬–NT$ 180 萬",
+    house: "蘇富比香港",
+    year: "2021",
+    image: asset("artwork-2.jpeg"),
+    locked: true,
+  },
+  {
+    title: "荷花冊頁",
+    artist: "齊白石",
+    era: "1940 年代",
+    category: "水墨花鳥",
+    price: "NT$ 85 萬–NT$ 120 萬",
+    house: "保利拍賣",
+    year: "2023",
+    image: asset("artwork-4.jpeg"),
+  },
+  {
+    title: "簾馬圖",
+    artist: "徐悲鴻",
+    era: "1935 年",
+    category: "水墨",
+    price: "NT$ 250 萬–NT$ 350 萬",
+    house: "佳士得香港",
+    year: "2022",
+    image: asset("artwork-6.jpeg"),
+  },
+  {
+    title: "仕女圖",
+    artist: "改琦",
+    era: "清代",
+    category: "人物",
+    price: "NT$ 28 萬–NT$ 38 萬",
+    house: "羅芙奧",
+    year: "2021",
+    image: asset("artwork-7.jpeg"),
+  },
+  {
+    title: "青花纏枝梅瓶",
+    artist: "宋代官窯",
+    era: "宋代",
+    category: "陶瓷",
+    price: "NT$ 480 萬–NT$ 600 萬",
+    house: "佳士得香港",
+    year: "2020",
+    image: asset("artwork-5.jpeg"),
+    locked: true,
+  },
+  {
+    title: "青花龍紋大瓶",
+    artist: "清乾隆",
+    era: "清代乾隆",
+    category: "陶瓷",
+    price: "NT$ 320 萬–NT$ 450 萬",
+    house: "蘇富比香港",
+    year: "2023",
+    image: asset("artwork-8.jpeg"),
+    locked: true,
+  },
+  {
+    title: "山水立軸",
+    artist: "傅抱石",
+    era: "1950 年代",
+    category: "山水",
+    price: "NT$ 45 萬–NT$ 62 萬",
+    house: "中國嘉德",
+    year: "2023",
+    image: asset("artwork-3.jpeg"),
+  },
+];
+
+export default function App() {
+  const [category, setCategory] = useState("全部");
+  const [query, setQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showPlans, setShowPlans] = useState(false);
+
+  const visibleLots = useMemo(() => {
+    const normalized = searchTerm.trim().toLowerCase();
+    return lots.filter((lot) => {
+      const categoryMatches = category === "全部" || lot.category === category;
+      const text =
+        `${lot.title} ${lot.artist} ${lot.era} ${lot.category}`.toLowerCase();
+      return categoryMatches && (!normalized || text.includes(normalized));
+    });
+  }, [category, searchTerm]);
+
+  const runSearch = (value = query) => setSearchTerm(value);
+
   return (
-    <>
-      {tokens.map((token, index) => {
-        if (token.startsWith("**") && token.endsWith("**"))
-          return <strong key={index}>{token.slice(2, -2)}</strong>;
-        if (token.startsWith("`") && token.endsWith("`"))
-          return <code key={index}>{token.slice(1, -1)}</code>;
-        return token;
-      })}
-    </>
-  );
-}
+    <div className="auction-site">
+      <header className="topbar">
+        <a className="wordmark" href="#top" aria-label="典藏志首頁">
+          <span>典</span>
+          <strong>典藏志</strong>
+        </a>
+        <button
+          className="gold-button subscribe"
+          type="button"
+          onClick={() => setShowPlans(true)}
+        >
+          訂閱方案
+        </button>
+      </header>
 
-function Message({ message }) {
-  if (message.role === "user")
-    return (
-      <article className="message user">
-        <div className="avatar">你</div>
-        <div className="message-body">
-          <div className="bubble">
-            <div className="answer-text">{message.text}</div>
-          </div>
-          <div className="message-meta">剛剛</div>
-        </div>
-      </article>
-    );
+      <nav className="journey" aria-label="使用流程">
+        {steps.map((step, index) => (
+          <span className={index === 0 ? "active" : ""} key={step}>
+            {step}
+            {index < steps.length - 1 && (
+              <img src={asset("chevron.svg")} alt="" />
+            )}
+          </span>
+        ))}
+      </nav>
 
-  if (message.loading)
-    return (
-      <article className="message assistant">
-        <div className="avatar">鑑</div>
-        <div className="message-body">
-          <div className="bubble">
-            <div className="typing" aria-label="Agent 分析中">
-              <i />
-              <i />
-              <i />
-            </div>
-            <div className="live-trace" aria-live="polite">
-              {message.traces.map((step, index) => (
-                <div
-                  className={`live-step ${step.status || "done"}`}
-                  key={index}
+      <main id="top">
+        <section className="hero" aria-labelledby="hero-title">
+          <img
+            className="hero-art"
+            src={asset("landscape.jpeg")}
+            alt="中國山水畫長卷"
+          />
+          <div className="hero-content">
+            <p className="kicker">古典藝術拍賣平台</p>
+            <h1 id="hero-title">以 AI 探索藝術市場</h1>
+            <p className="hero-copy">
+              用自然語言搜尋歷年拍賣紀錄，AI
+              自動辨識藝術家、年代、類別與價格條件
+            </p>
+            <form
+              className="searchbar"
+              onSubmit={(event) => {
+                event.preventDefault();
+                runSearch();
+              }}
+            >
+              <label>
+                <img src={asset("search.svg")} alt="" />
+                <input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="例：民國吳昌碩花鳥，預算 50 萬以內..."
+                />
+                <img src={asset("sparkle.svg")} alt="AI" />
+              </label>
+              <button className="gold-button" type="submit">
+                AI 搜尋
+              </button>
+            </form>
+            <div className="prompt-chips">
+              {suggestions.map((suggestion) => (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQuery(suggestion);
+                    runSearch(suggestion);
+                  }}
+                  key={suggestion}
                 >
-                  <span className="live-icon">
-                    {step.status === "blocked" ? "!" : "✓"}
-                  </span>
-                  <span>
-                    <strong>{step.label}</strong>
-                    {step.detail && <small>{step.detail}</small>}
-                  </span>
-                </div>
+                  {suggestion}
+                </button>
               ))}
             </div>
           </div>
-        </div>
-      </article>
-    );
+        </section>
 
-  const response = message.response;
-  if (response.error)
-    return (
-      <article className="message assistant">
-        <div className="avatar">鑑</div>
-        <div className="message-body">
-          <div className="bubble">
-            <div className="notice">
-              {response.error.message}（{response.error.code}）
+        <section className="lot-section" aria-label="拍品瀏覽">
+          <div className="filters">
+            <img src={asset("filter.svg")} alt="篩選" />
+            {categories.map((item) => (
+              <button
+                type="button"
+                className={item === category ? "selected" : ""}
+                onClick={() => setCategory(item)}
+                key={item}
+              >
+                {item}
+              </button>
+            ))}
+            <span>{visibleLots.length} 件拍品</span>
+          </div>
+          <div className="lot-grid">
+            {visibleLots.map((lot) => (
+              <article
+                className="lot-card"
+                tabIndex="0"
+                key={`${lot.title}-${lot.year}`}
+              >
+                <div className="lot-image">
+                  <img src={lot.image} alt={`${lot.artist}《${lot.title}》`} />
+                  <span className="lot-tag">{lot.category}</span>
+                  {lot.locked && (
+                    <span className="locked">
+                      <img src={asset("lock.svg")} alt="" />
+                      訂閱查看成交價
+                    </span>
+                  )}
+                </div>
+                <div className="lot-details">
+                  <h2>{lot.title}</h2>
+                  <p>
+                    {lot.artist} · {lot.era}
+                  </p>
+                  <strong>{lot.price}</strong>
+                  <footer>
+                    <span>{lot.house}</span>
+                    <span>{lot.year}</span>
+                  </footer>
+                </div>
+              </article>
+            ))}
+          </div>
+          {!visibleLots.length && (
+            <div className="empty">
+              <strong>未找到符合條件的拍品</strong>
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  setSearchTerm("");
+                  setCategory("全部");
+                }}
+              >
+                清除搜尋條件
+              </button>
             </div>
-          </div>
-          <div className="message-meta">Agent</div>
-        </div>
-      </article>
-    );
-  return (
-    <article className="message assistant">
-      <div className="avatar">鑑</div>
-      <div className="message-body">
-        <div className="bubble">
-          <div className="answer-text">
-            <InlineAnswer value={response.answer} />
-          </div>
-          <div className="attachments">
-            <ResponseBlocks response={response} />
-          </div>
-        </div>
-        <div className="message-meta">
-          Agent · {response.metadata?.model || "資料研究助手"}
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function Welcome({ onSuggestion }) {
-  return (
-    <div className="welcome">
-      <div className="welcome-icon">鑑</div>
-      <h2>今天想研究哪一批收藏品？</h2>
-      <p>你可以直接用自然語言追問，像跟研究助理聊天一樣。</p>
-      <div className="suggestions">
-        {suggestions.map(([label, text]) => (
-          <button type="button" key={label} onClick={() => onSuggestion(text)}>
-            {label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-export default function App() {
-  const [messages, setMessages] = useState([]);
-  const [conversationId, setConversationId] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [debugMode, setDebugMode] = useState(true);
-  const [question, setQuestion] = useState("");
-  const [health, setHealth] = useState({ label: "連線檢查中", ok: false });
-  const messagesRef = useRef(null);
-  const textareaRef = useRef(null);
-
-  useEffect(() => {
-    fetch("/health")
-      .then((res) => res.json())
-      .then((result) =>
-        setHealth(
-          result.status === "ok"
-            ? { label: "服務已連線", ok: true }
-            : { label: "服務異常", ok: false },
-        ),
-      )
-      .catch(() => setHealth({ label: "服務未連線", ok: false }));
-  }, []);
-
-  useEffect(() => {
-    if (messagesRef.current)
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-  }, [messages]);
-  useEffect(() => {
-    if (!textareaRef.current) return;
-    textareaRef.current.style.height = "auto";
-    textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
-  }, [question]);
-
-  const ask = async (rawText = question) => {
-    const text = rawText.trim();
-    if (!text || busy) return;
-    const loadingId =
-      globalThis.crypto?.randomUUID?.() || `loading-${Date.now()}`;
-    setMessages((current) => [
-      ...current,
-      { id: `user-${loadingId}`, role: "user", text },
-      { id: loadingId, role: "assistant", loading: true, traces: [] },
-    ]);
-    setQuestion("");
-    setBusy(true);
-    try {
-      const response = await sendChat({
-        message: text,
-        conversationId,
-        debugMode,
-        onTrace: (trace) =>
-          setMessages((current) =>
-            current.map((message) =>
-              message.id === loadingId
-                ? { ...message, traces: [...message.traces, trace] }
-                : message,
-            ),
-          ),
-      });
-      setConversationId(response.conversation_id || conversationId);
-      setMessages((current) =>
-        current.map((message) =>
-          message.id === loadingId
-            ? { id: loadingId, role: "assistant", response }
-            : message,
-        ),
-      );
-    } catch (error) {
-      const response = {
-        error: {
-          code: "NETWORK_ERROR",
-          message: `無法連線到 Agent：${error.message}`,
-        },
-      };
-      setMessages((current) =>
-        current.map((message) =>
-          message.id === loadingId
-            ? { id: loadingId, role: "assistant", response }
-            : message,
-        ),
-      );
-    } finally {
-      setBusy(false);
-      textareaRef.current?.focus();
-    }
-  };
-
-  const resetChat = () => {
-    setMessages([]);
-    setConversationId(null);
-    setQuestion("");
-    textareaRef.current?.focus();
-  };
-  const conversationLabel = conversationId ? "研究中的對話" : "新的研究對話";
-  const modelLabel =
-    [...messages].reverse().find((message) => message.response?.metadata?.model)
-      ?.response.metadata.model || "gpt-5.5";
-
-  return (
-    <div className="app-shell">
-      <aside className="sidebar" aria-label="對話側欄">
-        <div className="brand">
-          <div className="brand-mark">鑑</div>
-          <div>
-            <strong>AI 藝術品拍賣資料查詢 Agent</strong>
-            <span>AI AUCTION DATA AGENT</span>
-          </div>
-        </div>
-        <button className="new-chat" type="button" onClick={resetChat}>
-          <span className="plus">＋</span> 開始新對話
-        </button>
-        <div className="sidebar-section">
-          <p className="section-label">目前對話</p>
-          <div className="conversation-label">
-            <span className="conversation-dot" />
-            <span>{conversationLabel}</span>
-          </div>
-        </div>
-        <div className="sidebar-spacer" />
-        <div className="sidebar-note">
-          <span className="status-dot" />
-          <div>
-            <strong>本機 Agent</strong>
-            <span>{modelLabel} · DuckDB</span>
-          </div>
-        </div>
-      </aside>
-      <main className="chat-main">
-        <header className="chat-header">
-          <div>
-            <p className="eyebrow">COLLECTION RESEARCH</p>
-            <h1>AI 藝術品拍賣資料查詢 Agent</h1>
-            <p className="header-subtitle">
-              直接提問，Agent 會依資料自行查詢與整理。
-            </p>
-          </div>
-          <div className="header-actions">
-            <label className="debug-control">
-              <input
-                type="checkbox"
-                checked={debugMode}
-                onChange={(event) => setDebugMode(event.target.checked)}
-              />{" "}
-              顯示分析步驟
-            </label>
-            <div className={`health-badge ${health.ok ? "ok" : ""}`}>
-              <span />
-              {health.label}
-            </div>
-          </div>
-        </header>
-        <section className="messages" ref={messagesRef} aria-live="polite">
-          {messages.length ? (
-            messages.map((message) => (
-              <Message key={message.id} message={message} />
-            ))
-          ) : (
-            <Welcome onSuggestion={ask} />
           )}
         </section>
-        <div className="status" role="status" aria-live="polite">
-          {busy ? "Agent 正在理解問題、查詢資料…" : ""}
-        </div>
-        <form
-          className="composer"
-          onSubmit={(event) => {
-            event.preventDefault();
-            ask();
+      </main>
+
+      {showPlans && (
+        <div
+          className="plan-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="plan-title"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setShowPlans(false);
           }}
         >
-          <textarea
-            ref={textareaRef}
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                event.preventDefault();
-                ask();
-              }
-            }}
-            rows="1"
-            autoComplete="off"
-            disabled={busy}
-            placeholder="輸入你的問題…（Enter 送出，Shift + Enter 換行）"
-          />
-          <button
-            className="send-button"
-            type="submit"
-            disabled={busy}
-            aria-label="送出問題"
-          >
-            <span>送出</span>
-            <span className="send-arrow">↑</span>
-          </button>
-        </form>
-        <p className="composer-note">
-          回答會使用專案資料庫；拍賣公司、價格與成交狀態是模擬資料。
-        </p>
-      </main>
+          <div className="plan-dialog">
+            <button
+              className="close"
+              type="button"
+              onClick={() => setShowPlans(false)}
+              aria-label="關閉"
+            >
+              ×
+            </button>
+            <p className="kicker">典藏志會員</p>
+            <h2 id="plan-title">解鎖完整成交資料</h2>
+            <p>查看隱藏成交價、建立收藏追蹤與 AI 市場分析。</p>
+            <button
+              className="gold-button subscribe"
+              type="button"
+              onClick={() => setShowPlans(false)}
+            >
+              立即訂閱
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

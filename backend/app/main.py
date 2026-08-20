@@ -27,7 +27,7 @@ store = ConversationStore(settings.conversation_db_path)
 orchestrator = ChatOrchestrator(settings, catalog, database, store)
 
 app = FastAPI(title="AI 藝術品拍賣資料查詢 Agent API", version="0.1.0")
-frontend_directory = settings.project_root / "frontend"
+frontend_directory = settings.project_root / "frontend" / "dist"
 if frontend_directory.exists():
     app.mount("/ui", StaticFiles(directory=frontend_directory, html=True), name="ui")
 configured_origins = [

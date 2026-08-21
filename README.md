@@ -78,13 +78,13 @@ flowchart LR
 
 資料庫檔案為 `data/auction_demo.duckdb`，以唯讀方式查詢。
 
-| 資料表 | 用途 |
-|---|---|
-| `auction_lots` | 主要拍品與交易紀錄，15,000 筆 |
-| `auction_events` | 拍賣場次、日期、地區與類別 |
-| `auction_houses` | 拍賣公司主檔 |
-| `name_aliases` | 名稱別名與標準名稱對應 |
-| `exchange_rates` | 歷史匯率與資料來源日期 |
+| 資料表           | 用途                          |
+| ---------------- | ----------------------------- |
+| `auction_lots`   | 主要拍品與交易紀錄，15,000 筆 |
+| `auction_events` | 拍賣場次、日期、地區與類別    |
+| `auction_houses` | 拍賣公司主檔                  |
+| `name_aliases`   | 名稱別名與標準名稱對應        |
+| `exchange_rates` | 歷史匯率與資料來源日期        |
 
 完整欄位、型別、合法值、NULL 規則、主鍵與外鍵請參考：
 
@@ -128,14 +128,14 @@ flowchart LR
 
 前端使用同一個 `/api/chat`，方案由後端依請求標頭判斷；前端不能自行把自己改成會員。
 
-| 權限 | 非會員 | 會員 |
-|---|---:|---:|
-| 每日問答次數 | 5 | 100 |
-| 單次最多回傳筆數 | 10 | 100 |
-| 圖表 | 否，趨勢改以表格回傳 | 是 |
-| 圖片 | 最多 1 張 | 最多 20 張 |
-| 跨資料表分析 | 否 | 是 |
-| 對話上下文 | 4 則 | 20 則 |
+| 權限             |               非會員 |       會員 |
+| ---------------- | -------------------: | ---------: |
+| 每日問答次數     |                    5 |        100 |
+| 單次最多回傳筆數 |                   10 |        100 |
+| 圖表             | 否，趨勢改以表格回傳 |         是 |
+| 圖片             |            最多 1 張 | 最多 20 張 |
+| 跨資料表分析     |                   否 |         是 |
+| 對話上下文       |                 4 則 |      20 則 |
 
 目前會員身分使用 Demo token；真正接登入、付款或會員資料庫時，只需要替換後端的身分解析邏輯，API 格式不變。管理員方案尚未列入目前 Demo。
 
@@ -145,15 +145,15 @@ flowchart LR
 
 ## 7. 技術棧
 
-| 元件 | 用途 |
-|---|---|
-| FastAPI | 後端 API 與 SSE 串流 |
-| OpenAI Agents SDK | Agent 規劃與工具呼叫 |
-| DuckDB | 本機唯讀分析資料庫 |
-| SQLite | 對話歷史與每日使用量的本機狀態 |
-| SQLGlot | SQL 解析與安全檢查 |
-| HTML／CSS／JavaScript | 無需建置工具的 Chatbot 前端 |
-| Docker Compose | 固定執行環境與交付方式 |
+| 元件              | 用途                           |
+| ----------------- | ------------------------------ |
+| FastAPI           | 後端 API 與 SSE 串流           |
+| OpenAI Agents SDK | Agent 規劃與工具呼叫           |
+| DuckDB            | 本機唯讀分析資料庫             |
+| SQLite            | 對話歷史與每日使用量的本機狀態 |
+| SQLGlot           | SQL 解析與安全檢查             |
+| React/Vite        | 前端建置                       |
+| Docker Compose    | 固定執行環境與交付方式         |
 
 ---
 
@@ -183,7 +183,10 @@ auction-agent/
 │   └── raw/                      # 故宮與匯率原始資料
 ├── frontend/
 │   ├── index.html
-│   ├── app.js
+│   ├── src/                    # React 元件與 API adapter
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── vite.config.js
 │   └── styles.css
 ├── scripts/                     # 資料產生與文件產生工具
 ├── requirements.txt             # 資料重建工具的 DuckDB 依賴
@@ -260,13 +263,13 @@ docker compose down
 
 ### 主要端點
 
-| 方法 | 端點 | 用途 |
-|---|---|---|
-| `POST` | `/api/chat` | 主要問答端點 |
-| `GET` | `/api/me` | 取得目前方案與今日額度 |
-| `GET` | `/health` | 確認服務與資料庫狀態 |
-| `GET` | `/api/catalog` | 取得安全資料字典摘要 |
-| `GET` | `/api/skills` | 取得可用 Skill 清單 |
+| 方法   | 端點           | 用途                   |
+| ------ | -------------- | ---------------------- |
+| `POST` | `/api/chat`    | 主要問答端點           |
+| `GET`  | `/api/me`      | 取得目前方案與今日額度 |
+| `GET`  | `/health`      | 確認服務與資料庫狀態   |
+| `GET`  | `/api/catalog` | 取得安全資料字典摘要   |
+| `GET`  | `/api/skills`  | 取得可用 Skill 清單    |
 
 `/api/models` 與 `/api/model` 目前保留給內部開發測試；前端問答不需要依賴它們，也不屬於會員方案差異。
 

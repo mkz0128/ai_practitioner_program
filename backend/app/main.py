@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .agent import ChatOrchestrator
 from .auth import resolve_user
@@ -26,10 +27,27 @@ database = ReadOnlyDuckDB(settings, catalog)
 store = ConversationStore(settings.conversation_db_path)
 orchestrator = ChatOrchestrator(settings, catalog, database, store)
 
+
+class SPAStaticFiles(StaticFiles):
+    """Serve the React entry point for client-side routes."""
+
+    async def get_response(self, path: str, scope: dict):
+        try:
+            return await super().get_response(path, scope)
+        except StarletteHTTPException as exc:
+            is_not_found = exc.status_code == 404
+            is_client_route = "." not in path.rsplit("/", 1)[-1]
+
+            if is_not_found and is_client_route:
+                return await super().get_response("index.html", scope)
+
+            raise
+
+
 app = FastAPI(title="AI 藝術品拍賣資料查詢 Agent API", version="0.1.0")
-frontend_directory = settings.project_root / "frontend"
+frontend_directory = settings.project_root / "frontend" / "dist"
 if frontend_directory.exists():
-    app.mount("/ui", StaticFiles(directory=frontend_directory, html=True), name="ui")
+    app.mount("/ui", SPAStaticFiles(directory=frontend_directory, html=True), name="ui")
 configured_origins = [
     origin.strip()
     for origin in os.getenv("AUCTION_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")

@@ -10,8 +10,7 @@ export default function HomePage() {
   const [query, setQuery] = useState("");
   const visibleLots = useMemo(() => {
     return lots.filter(
-      (lot) =>
-        category === "全部" || lot.category === category,
+      (lot) => category === "全部" || lot.category === category,
     );
   }, [category]);
   const runAiSearch = (value = query) => {
@@ -29,7 +28,7 @@ export default function HomePage() {
       <section className="hero" aria-labelledby="hero-title">
         <img
           className="hero-art"
-          src={asset("landscape.jpeg")}
+          src={asset("landscape.png")}
           alt="中國山水畫長卷"
         />
         <div className="hero-content">

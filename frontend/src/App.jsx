@@ -1,4 +1,12 @@
 import { useMemo, useState } from "react";
+import {
+  Link,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 const asset = (name) => `${import.meta.env.BASE_URL}figma-assets/${name}`;
 
@@ -148,8 +156,10 @@ export default function App() {
   const [category, setCategory] = useState("全部");
   const [query, setQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [view, setView] = useState("browse");
   const [selectedPlan, setSelectedPlan] = useState("專業版");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isSubscribePage = location.pathname === "/subscribe";
 
   const visibleLots = useMemo(() => {
     const normalized = searchTerm.trim().toLowerCase();
@@ -166,25 +176,25 @@ export default function App() {
   return (
     <div className="auction-site">
       <header className="topbar">
-        <a className="wordmark" href="#top" aria-label="典藏志首頁">
+        <Link className="wordmark" to="/" aria-label="典藏志首頁">
           <span>典</span>
           <strong>典藏志</strong>
-        </a>
-        <button
+        </Link>
+        <Link
           className="gold-button subscribe"
-          type="button"
-          onClick={() => setView("plans")}
+          to="/subscribe"
+          state={{ from: location.pathname }}
         >
           訂閱方案
-        </button>
+        </Link>
       </header>
 
       <nav className="journey" aria-label="使用流程">
         {steps.map((step, index) => (
           <span
             className={
-              (view === "browse" && index === 0) ||
-              (view === "plans" && index === steps.length - 1)
+              (!isSubscribePage && index === 0) ||
+              (isSubscribePage && index === steps.length - 1)
                 ? "active"
                 : ""
             }
@@ -198,8 +208,8 @@ export default function App() {
         ))}
       </nav>
 
-      {view === "browse" ? (
-        <main id="top">
+      <Routes>
+        <Route path="/" element={<main id="top">
           <section className="hero" aria-labelledby="hero-title">
             <img
               className="hero-art"
@@ -315,13 +325,12 @@ export default function App() {
               </div>
             )}
           </section>
-        </main>
-      ) : (
-        <main className="subscribe-page" id="top">
+        </main>} />
+        <Route path="/subscribe" element={<main className="subscribe-page" id="top">
           <button
             className="back-button"
             type="button"
-            onClick={() => setView("browse")}
+            onClick={() => navigate(location.state?.from || "/")}
           >
             <img src={asset("back.svg")} alt="" /> 返回
           </button>
@@ -381,8 +390,9 @@ export default function App() {
             </button>
             <p>可隨時取消訂閱 · 付款資料加密保護</p>
           </div>
-        </main>
-      )}
+        </main>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </div>
   );
 }

@@ -26,10 +26,21 @@ database = ReadOnlyDuckDB(settings, catalog)
 store = ConversationStore(settings.conversation_db_path)
 orchestrator = ChatOrchestrator(settings, catalog, database, store)
 
+
+class SPAStaticFiles(StaticFiles):
+    """Serve the React entry point for client-side routes."""
+
+    async def get_response(self, path: str, scope: dict):
+        response = await super().get_response(path, scope)
+        if response.status_code == 404 and "." not in path.rsplit("/", 1)[-1]:
+            return await super().get_response("index.html", scope)
+        return response
+
+
 app = FastAPI(title="AI 藝術品拍賣資料查詢 Agent API", version="0.1.0")
 frontend_directory = settings.project_root / "frontend" / "dist"
 if frontend_directory.exists():
-    app.mount("/ui", StaticFiles(directory=frontend_directory, html=True), name="ui")
+    app.mount("/ui", SPAStaticFiles(directory=frontend_directory, html=True), name="ui")
 configured_origins = [
     origin.strip()
     for origin in os.getenv("AUCTION_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")

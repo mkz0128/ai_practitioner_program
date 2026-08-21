@@ -63,10 +63,14 @@ button {
   letter-spacing: 0;
 }
 .gold-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   background: #c9a84c;
   color: #0d0b09;
   font-weight: 700;
+  text-decoration: none;
   transition:
     background 0.18s,
     transform 0.18s;

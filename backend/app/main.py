@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .agent import ChatOrchestrator
 from .auth import resolve_user
@@ -31,10 +32,16 @@ class SPAStaticFiles(StaticFiles):
     """Serve the React entry point for client-side routes."""
 
     async def get_response(self, path: str, scope: dict):
-        response = await super().get_response(path, scope)
-        if response.status_code == 404 and "." not in path.rsplit("/", 1)[-1]:
-            return await super().get_response("index.html", scope)
-        return response
+        try:
+            return await super().get_response(path, scope)
+        except StarletteHTTPException as exc:
+            is_not_found = exc.status_code == 404
+            is_client_route = "." not in path.rsplit("/", 1)[-1]
+
+            if is_not_found and is_client_route:
+                return await super().get_response("index.html", scope)
+
+            raise
 
 
 app = FastAPI(title="AI 藝術品拍賣資料查詢 Agent API", version="0.1.0")

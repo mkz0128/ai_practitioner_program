@@ -2,14 +2,17 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { steps } from "../data/auctionData.js";
 import { asset } from "../utils/assets.js";
 
+function getActiveStep(pathname) {
+  if (pathname === "/research") return 1;
+  if (pathname.startsWith("/lots/")) return 3;
+  if (pathname === "/subscribe") return 4;
+  return 0;
+}
+
 export default function AuctionLayout() {
   const location = useLocation();
-  const activeStep =
-    location.pathname === "/subscribe"
-      ? 4
-      : location.pathname.startsWith("/lots/")
-        ? 3
-        : 0;
+  const activeStep = getActiveStep(location.pathname);
+
   return (
     <div className="auction-site">
       <header className="topbar">

@@ -29,8 +29,13 @@ export async function readSse(response, onTrace) {
         if (line.startsWith("data:")) data += line.slice(5).trim();
       });
       if (!data) continue;
-      const payload = JSON.parse(data);
-      if (event === "trace") onTrace(payload);
+      let payload;
+      try {
+        payload = JSON.parse(data);
+      } catch {
+        throw new Error("Agent 回傳了無法解析的串流資料");
+      }
+      if (event === "trace") onTrace?.(payload);
       if (event === "result") result = payload;
     }
   };
@@ -50,6 +55,7 @@ export async function sendChat({
   conversationId,
   debugMode,
   onTrace,
+  signal,
 }) {
   const response = await fetch("/api/chat", {
     method: "POST",
@@ -57,7 +63,10 @@ export async function sendChat({
       "Content-Type": "application/json",
       Accept: "text/event-stream",
       "X-Anonymous-Id": anonymousId(),
+      "X-Client-Request-Id":
+        globalThis.crypto?.randomUUID?.() || `request_${Date.now()}`,
     },
+    signal,
     body: JSON.stringify({
       message,
       conversation_id: conversationId,
@@ -65,6 +74,19 @@ export async function sendChat({
       stream: true,
     }),
   });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  if (!response.ok) {
+    let message = `HTTP ${response.status}`;
+    try {
+      const payload = await response.json();
+      message =
+        payload?.detail?.message ||
+        payload?.detail ||
+        payload?.error?.message ||
+        message;
+    } catch {
+      // The status code remains useful when the server does not return JSON.
+    }
+    throw new Error(message);
+  }
   return readSse(response, onTrace);
 }

@@ -1,27 +1,26 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LotCard from "../components/LotCard.jsx";
 import { categories, lots, suggestions } from "../data/auctionData.js";
 import { asset } from "../utils/assets.js";
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [category, setCategory] = useState("全部");
   const [query, setQuery] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const visibleLots = useMemo(() => {
-    const normalized = searchTerm.trim().toLowerCase();
     return lots.filter(
       (lot) =>
-        (category === "全部" || lot.category === category) &&
-        (!normalized ||
-          `${lot.title} ${lot.artist} ${lot.era} ${lot.category}`
-            .toLowerCase()
-            .includes(normalized)),
+        category === "全部" || lot.category === category,
     );
-  }, [category, searchTerm]);
-  const runSearch = (value = query) => setSearchTerm(value);
+  }, [category]);
+  const runAiSearch = (value = query) => {
+    const question = value.trim();
+    if (!question) return;
+    navigate("/research", { state: { initialQuestion: question } });
+  };
   const clearSearch = () => {
     setQuery("");
-    setSearchTerm("");
     setCategory("全部");
   };
 
@@ -43,7 +42,7 @@ export default function HomePage() {
             className="searchbar"
             onSubmit={(event) => {
               event.preventDefault();
-              runSearch();
+              runAiSearch();
             }}
           >
             <label>
@@ -65,7 +64,7 @@ export default function HomePage() {
                 type="button"
                 onClick={() => {
                   setQuery(suggestion);
-                  runSearch(suggestion);
+                  runAiSearch(suggestion);
                 }}
                 key={suggestion}
               >

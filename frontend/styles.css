@@ -811,6 +811,48 @@ button {
     500 10px "DM Mono",
     monospace;
 }
+.line-chart {
+  min-width: 420px;
+  overflow-x: auto;
+}
+.line-chart svg {
+  display: block;
+  width: 100%;
+  min-width: 420px;
+}
+.line-chart-axis {
+  stroke: rgba(201, 168, 76, 0.18);
+  stroke-width: 1;
+}
+.line-chart-path {
+  fill: none;
+  stroke: #c9a84c;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+.line-chart-point {
+  fill: #17140f;
+  stroke: #c9a84c;
+  stroke-width: 3;
+}
+.line-chart-labels {
+  display: grid;
+  min-width: 420px;
+  color: #8c7d5e;
+  font-size: 10px;
+  text-align: center;
+}
+.line-chart-labels span {
+  display: grid;
+  gap: 3px;
+}
+.line-chart-labels strong {
+  color: #d8d0ba;
+  font:
+    500 10px "DM Mono",
+    monospace;
+}
 .images {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

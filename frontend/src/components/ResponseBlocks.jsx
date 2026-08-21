@@ -4,6 +4,10 @@ function formatValue(value) {
     : (value ?? "—");
 }
 
+function formatChartValue(value, format) {
+  return format === "0.00%" ? `${value.toFixed(2)}%` : formatValue(value);
+}
+
 function Table({ table }) {
   if (!table?.columns?.length) return null;
   const rows = (table.rows || []).slice(0, 20);
@@ -49,6 +53,55 @@ function Chart({ chart, table }) {
   if (!rows.length) return null;
   const values = rows.map((row) => Number(row[chart.encoding.y]) || 0);
   const max = Math.max(...values, 1);
+
+  if (chart.type === "line") {
+    const width = 600;
+    const height = 220;
+    const padding = 24;
+    const visibleRows = rows.slice(0, 20);
+    const points = visibleRows.map((row, index) => {
+      const value = Number(row[chart.encoding.y]) || 0;
+      return {
+        label: row[chart.encoding.x],
+        value,
+        x:
+          visibleRows.length === 1
+            ? width / 2
+            : padding + (index / (visibleRows.length - 1)) * (width - padding * 2),
+        y: padding + (height - padding * 2) * (1 - value / max),
+      };
+    });
+
+    return (
+      <details className="attachment" open>
+        <summary>圖表：{chart.title}</summary>
+        <div className="attachment-content">
+          <div className="line-chart">
+            <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={chart.title || "折線圖"}>
+              <line className="line-chart-axis" x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} />
+              {points.length > 1 && (
+                <polyline className="line-chart-path" points={points.map((point) => `${point.x},${point.y}`).join(" ")} />
+              )}
+              {points.map((point, index) => (
+                <circle className="line-chart-point" cx={point.x} cy={point.y} r="5" key={`${point.label}-${index}`}>
+                  <title>{`${point.label}: ${formatChartValue(point.value, chart.encoding.y_format)}`}</title>
+                </circle>
+              ))}
+            </svg>
+            <div className="line-chart-labels" style={{ gridTemplateColumns: `repeat(${points.length}, minmax(0, 1fr))` }}>
+              {points.map((point, index) => (
+                <span key={`${point.label}-${index}`}>
+                  <strong>{formatChartValue(point.value, chart.encoding.y_format)}</strong>
+                  {point.label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </details>
+    );
+  }
+
   return (
     <details className="attachment" open>
       <summary>圖表：{chart.title}</summary>
@@ -56,10 +109,7 @@ function Chart({ chart, table }) {
         <div className="chart">
           {rows.slice(0, 20).map((row, index) => {
             const value = Number(row[chart.encoding.y]) || 0;
-            const display =
-              chart.encoding.y_format === "0.00%"
-                ? `${value.toFixed(2)}%`
-                : formatValue(value);
+            const display = formatChartValue(value, chart.encoding.y_format);
             return (
               <div className="bar-row" key={index}>
                 <span>{row[chart.encoding.x]}</span>

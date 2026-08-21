@@ -6,6 +6,7 @@ import {
   Routes,
   useLocation,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 
 const asset = (name) => `${import.meta.env.BASE_URL}figma-assets/${name}`;
@@ -68,6 +69,7 @@ const plans = [
 
 const lots = [
   {
+    id: "wu-changshuo-flower-bird-screens",
     title: "花鳥四屏",
     artist: "吳昌碩",
     era: "民國初期",
@@ -76,8 +78,11 @@ const lots = [
     house: "中國嘉德",
     year: "2022",
     image: asset("artwork-3.jpeg"),
+    lotNumber: "2284",
+    source: "嘉德年鑑 2022",
   },
   {
+    id: "zhang-daqian-landscape-scroll",
     title: "山水長卷",
     artist: "張大千",
     era: "1960 年代",
@@ -89,6 +94,7 @@ const lots = [
     locked: true,
   },
   {
+    id: "qi-baishi-lotus-album",
     title: "荷花冊頁",
     artist: "齊白石",
     era: "1940 年代",
@@ -99,6 +105,7 @@ const lots = [
     image: asset("artwork-4.jpeg"),
   },
   {
+    id: "xu-beihong-horse-painting",
     title: "簾馬圖",
     artist: "徐悲鴻",
     era: "1935 年",
@@ -109,6 +116,7 @@ const lots = [
     image: asset("artwork-6.jpeg"),
   },
   {
+    id: "gai-qi-beauty-painting",
     title: "仕女圖",
     artist: "改琦",
     era: "清代",
@@ -119,6 +127,7 @@ const lots = [
     image: asset("artwork-7.jpeg"),
   },
   {
+    id: "song-celadon-vase",
     title: "青花纏枝梅瓶",
     artist: "宋代官窯",
     era: "宋代",
@@ -130,6 +139,7 @@ const lots = [
     locked: true,
   },
   {
+    id: "qing-qianlong-dragon-vase",
     title: "青花龍紋大瓶",
     artist: "清乾隆",
     era: "清代乾隆",
@@ -141,6 +151,7 @@ const lots = [
     locked: true,
   },
   {
+    id: "fu-baoshi-landscape-scroll",
     title: "山水立軸",
     artist: "傅抱石",
     era: "1950 年代",
@@ -152,6 +163,81 @@ const lots = [
   },
 ];
 
+function LotDetail() {
+  const { lotId } = useParams();
+  const navigate = useNavigate();
+  const lot = lots.find((item) => item.id === lotId);
+
+  if (!lot) return <Navigate to="/" replace />;
+
+  const facts = [
+    ["拍賣行", lot.house],
+    ["拍賣年份", lot.year],
+    ["估價範圍", lot.price],
+    ["拍品類別", lot.category],
+  ];
+
+  return (
+    <main className="detail-page" id="top">
+      <button
+        className="back-button"
+        type="button"
+        onClick={() => navigate(-1)}
+      >
+        <img src={asset("back.svg")} alt="" /> 返回搜尋結果
+      </button>
+      <div className="detail-layout">
+        <section className="detail-art-column" aria-label="拍品圖片與來源">
+          <div className="detail-image">
+            <img src={lot.image} alt={`${lot.artist}《${lot.title}》`} />
+          </div>
+          <p className="lot-number">Lot {lot.lotNumber || "—"}</p>
+          <div className="source-card">
+            <span>資料來源</span>
+            <strong>{lot.source || `${lot.house} ${lot.year}`}</strong>
+          </div>
+        </section>
+        <section className="detail-content" aria-labelledby="lot-title">
+          <p className="detail-category">{lot.category}</p>
+          <h1 id="lot-title">{lot.title}</h1>
+          <p className="detail-byline">
+            {lot.artist} · {lot.era}
+          </p>
+          <dl className="fact-grid">
+            {facts.map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+          <div className="locked-insights">
+            {["最終成交價", "完整拍賣紀錄（歷年）", "市場趨勢分析"].map(
+              (label) => (
+                <section className="insight-card" key={label}>
+                  <header>
+                    <span>{label}</span>
+                    <img src={asset("lock.svg")} alt="需要訂閱" />
+                  </header>
+                  <i />
+                  <i />
+                </section>
+              ),
+            )}
+          </div>
+          <Link
+            className="gold-button detail-subscribe"
+            to="/subscribe"
+            state={{ from: `/lots/${lot.id}` }}
+          >
+            <img src={asset("subscribe-lock.svg")} alt="" /> 訂閱以解鎖完整資訊
+          </Link>
+        </section>
+      </div>
+    </main>
+  );
+}
+
 export default function App() {
   const [category, setCategory] = useState("全部");
   const [query, setQuery] = useState("");
@@ -160,6 +246,7 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const isSubscribePage = location.pathname === "/subscribe";
+  const isDetailPage = location.pathname.startsWith("/lots/");
 
   const visibleLots = useMemo(() => {
     const normalized = searchTerm.trim().toLowerCase();
@@ -193,7 +280,8 @@ export default function App() {
         {steps.map((step, index) => (
           <span
             className={
-              (!isSubscribePage && index === 0) ||
+              (!isSubscribePage && !isDetailPage && index === 0) ||
+              (isDetailPage && index === 3) ||
               (isSubscribePage && index === steps.length - 1)
                 ? "active"
                 : ""
@@ -209,188 +297,203 @@ export default function App() {
       </nav>
 
       <Routes>
-        <Route path="/" element={<main id="top">
-          <section className="hero" aria-labelledby="hero-title">
-            <img
-              className="hero-art"
-              src={asset("landscape.jpeg")}
-              alt="中國山水畫長卷"
-            />
-            <div className="hero-content">
-              <p className="kicker">古典藝術拍賣平台</p>
-              <h1 id="hero-title">以 AI 探索藝術市場</h1>
-              <p className="hero-copy">
-                用自然語言搜尋歷年拍賣紀錄，AI
-                自動辨識藝術家、年代、類別與價格條件
-              </p>
-              <form
-                className="searchbar"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  runSearch();
-                }}
-              >
-                <label>
-                  <img src={asset("search.svg")} alt="" />
-                  <input
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    placeholder="例：民國吳昌碩花鳥，預算 50 萬以內..."
-                  />
-                  <img src={asset("sparkle.svg")} alt="AI" />
-                </label>
-                <button className="gold-button" type="submit">
-                  AI 搜尋
-                </button>
-              </form>
-              <div className="prompt-chips">
-                {suggestions.map((suggestion) => (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setQuery(suggestion);
-                      runSearch(suggestion);
+        <Route
+          path="/"
+          element={
+            <main id="top">
+              <section className="hero" aria-labelledby="hero-title">
+                <img
+                  className="hero-art"
+                  src={asset("landscape.jpeg")}
+                  alt="中國山水畫長卷"
+                />
+                <div className="hero-content">
+                  <p className="kicker">古典藝術拍賣平台</p>
+                  <h1 id="hero-title">以 AI 探索藝術市場</h1>
+                  <p className="hero-copy">
+                    用自然語言搜尋歷年拍賣紀錄，AI
+                    自動辨識藝術家、年代、類別與價格條件
+                  </p>
+                  <form
+                    className="searchbar"
+                    onSubmit={(event) => {
+                      event.preventDefault();
+                      runSearch();
                     }}
-                    key={suggestion}
                   >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
+                    <label>
+                      <img src={asset("search.svg")} alt="" />
+                      <input
+                        value={query}
+                        onChange={(event) => setQuery(event.target.value)}
+                        placeholder="例：民國吳昌碩花鳥，預算 50 萬以內..."
+                      />
+                      <img src={asset("sparkle.svg")} alt="AI" />
+                    </label>
+                    <button className="gold-button" type="submit">
+                      AI 搜尋
+                    </button>
+                  </form>
+                  <div className="prompt-chips">
+                    {suggestions.map((suggestion) => (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setQuery(suggestion);
+                          runSearch(suggestion);
+                        }}
+                        key={suggestion}
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </section>
 
-          <section className="lot-section" aria-label="拍品瀏覽">
-            <div className="filters">
-              <img src={asset("filter.svg")} alt="篩選" />
-              {categories.map((item) => (
-                <button
-                  type="button"
-                  className={item === category ? "selected" : ""}
-                  onClick={() => setCategory(item)}
-                  key={item}
-                >
-                  {item}
-                </button>
-              ))}
-              <span>{visibleLots.length} 件拍品</span>
-            </div>
-            <div className="lot-grid">
-              {visibleLots.map((lot) => (
-                <article
-                  className="lot-card"
-                  tabIndex="0"
-                  key={`${lot.title}-${lot.year}`}
-                >
-                  <div className="lot-image">
-                    <img
-                      src={lot.image}
-                      alt={`${lot.artist}《${lot.title}》`}
-                    />
-                    <span className="lot-tag">{lot.category}</span>
-                    {lot.locked && (
-                      <span className="locked">
-                        <img src={asset("lock.svg")} alt="" />
-                        訂閱查看成交價
-                      </span>
-                    )}
+              <section className="lot-section" aria-label="拍品瀏覽">
+                <div className="filters">
+                  <img src={asset("filter.svg")} alt="篩選" />
+                  {categories.map((item) => (
+                    <button
+                      type="button"
+                      className={item === category ? "selected" : ""}
+                      onClick={() => setCategory(item)}
+                      key={item}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                  <span>{visibleLots.length} 件拍品</span>
+                </div>
+                <div className="lot-grid">
+                  {visibleLots.map((lot) => (
+                    <Link
+                      className="lot-card"
+                      to={`/lots/${lot.id}`}
+                      key={`${lot.title}-${lot.year}`}
+                      aria-label={`查看${lot.artist}《${lot.title}》拍品明細`}
+                    >
+                      <div className="lot-image">
+                        <img
+                          src={lot.image}
+                          alt={`${lot.artist}《${lot.title}》`}
+                        />
+                        <span className="lot-tag">{lot.category}</span>
+                        {lot.locked && (
+                          <span className="locked">
+                            <img src={asset("lock.svg")} alt="" />
+                            訂閱查看成交價
+                          </span>
+                        )}
+                      </div>
+                      <div className="lot-details">
+                        <h2>{lot.title}</h2>
+                        <p>
+                          {lot.artist} · {lot.era}
+                        </p>
+                        <strong>{lot.price}</strong>
+                        <footer>
+                          <span>{lot.house}</span>
+                          <span>{lot.year}</span>
+                        </footer>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                {!visibleLots.length && (
+                  <div className="empty">
+                    <strong>未找到符合條件的拍品</strong>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuery("");
+                        setSearchTerm("");
+                        setCategory("全部");
+                      }}
+                    >
+                      清除搜尋條件
+                    </button>
                   </div>
-                  <div className="lot-details">
-                    <h2>{lot.title}</h2>
-                    <p>
-                      {lot.artist} · {lot.era}
-                    </p>
-                    <strong>{lot.price}</strong>
-                    <footer>
-                      <span>{lot.house}</span>
-                      <span>{lot.year}</span>
-                    </footer>
-                  </div>
-                </article>
-              ))}
-            </div>
-            {!visibleLots.length && (
-              <div className="empty">
-                <strong>未找到符合條件的拍品</strong>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setQuery("");
-                    setSearchTerm("");
-                    setCategory("全部");
-                  }}
-                >
-                  清除搜尋條件
-                </button>
+                )}
+              </section>
+            </main>
+          }
+        />
+        <Route path="/lots/:lotId" element={<LotDetail />} />
+        <Route
+          path="/subscribe"
+          element={
+            <main className="subscribe-page" id="top">
+              <button
+                className="back-button"
+                type="button"
+                onClick={() => navigate(location.state?.from || "/")}
+              >
+                <img src={asset("back.svg")} alt="" /> 返回
+              </button>
+              <header className="subscribe-intro">
+                <p>
+                  <img src={asset("crown.svg")} alt="" /> 訂閱方案
+                </p>
+                <h1>解鎖完整市場資訊</h1>
+                <span>
+                  訂閱後解鎖歷年拍賣成交價與市場分析，讓 AI
+                  協助您深入理解藝術市場
+                </span>
+              </header>
+              <div className="plan-grid">
+                {plans.map((plan) => {
+                  const selected = selectedPlan === plan.name;
+                  return (
+                    <button
+                      className={`plan-card ${selected ? "selected" : ""}`}
+                      type="button"
+                      onClick={() => setSelectedPlan(plan.name)}
+                      key={plan.name}
+                    >
+                      {plan.popular && (
+                        <span className="popular">最受歡迎</span>
+                      )}
+                      <div className="plan-name">
+                        <strong>{plan.name}</strong>
+                        {selected ? (
+                          <img src={asset("check.svg")} alt="已選取" />
+                        ) : (
+                          <i />
+                        )}
+                      </div>
+                      <div className="price">
+                        NT$ <strong>{plan.price}</strong> <small>/ 月</small>
+                      </div>
+                      <ul>
+                        {plan.features.map((feature) => (
+                          <li key={feature}>
+                            <img src={asset("check.svg")} alt="" />
+                            {feature}
+                          </li>
+                        ))}
+                        {plan.unavailable?.map((feature) => (
+                          <li className="unavailable" key={feature}>
+                            <img src={asset("x.svg")} alt="" />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </button>
+                  );
+                })}
               </div>
-            )}
-          </section>
-        </main>} />
-        <Route path="/subscribe" element={<main className="subscribe-page" id="top">
-          <button
-            className="back-button"
-            type="button"
-            onClick={() => navigate(location.state?.from || "/")}
-          >
-            <img src={asset("back.svg")} alt="" /> 返回
-          </button>
-          <header className="subscribe-intro">
-            <p>
-              <img src={asset("crown.svg")} alt="" /> 訂閱方案
-            </p>
-            <h1>解鎖完整市場資訊</h1>
-            <span>
-              訂閱後解鎖歷年拍賣成交價與市場分析，讓 AI 協助您深入理解藝術市場
-            </span>
-          </header>
-          <div className="plan-grid">
-            {plans.map((plan) => {
-              const selected = selectedPlan === plan.name;
-              return (
-                <button
-                  className={`plan-card ${selected ? "selected" : ""}`}
-                  type="button"
-                  onClick={() => setSelectedPlan(plan.name)}
-                  key={plan.name}
-                >
-                  {plan.popular && <span className="popular">最受歡迎</span>}
-                  <div className="plan-name">
-                    <strong>{plan.name}</strong>
-                    {selected ? (
-                      <img src={asset("check.svg")} alt="已選取" />
-                    ) : (
-                      <i />
-                    )}
-                  </div>
-                  <div className="price">
-                    NT$ <strong>{plan.price}</strong> <small>/ 月</small>
-                  </div>
-                  <ul>
-                    {plan.features.map((feature) => (
-                      <li key={feature}>
-                        <img src={asset("check.svg")} alt="" />
-                        {feature}
-                      </li>
-                    ))}
-                    {plan.unavailable?.map((feature) => (
-                      <li className="unavailable" key={feature}>
-                        <img src={asset("x.svg")} alt="" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
+              <div className="subscribe-action">
+                <button className="gold-button" type="button">
+                  <img src={asset("subscribe-lock.svg")} alt="" />
+                  立即訂閱 {selectedPlan}
                 </button>
-              );
-            })}
-          </div>
-          <div className="subscribe-action">
-            <button className="gold-button" type="button">
-              <img src={asset("subscribe-lock.svg")} alt="" />
-              立即訂閱 {selectedPlan}
-            </button>
-            <p>可隨時取消訂閱 · 付款資料加密保護</p>
-          </div>
-        </main>} />
+                <p>可隨時取消訂閱 · 付款資料加密保護</p>
+              </div>
+            </main>
+          }
+        />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>

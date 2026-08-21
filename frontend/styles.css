@@ -280,13 +280,151 @@ button {
   margin-top: 16px;
 }
 .lot-card {
+  display: block;
   overflow: hidden;
   border: 1px solid rgba(201, 168, 76, 0.14);
   background: #181410;
   outline: 0;
+  color: inherit;
+  text-decoration: none;
   transition:
     border-color 0.2s,
     transform 0.2s;
+}
+.detail-page {
+  width: min(896px, 100%);
+  margin: 0 auto;
+  padding: 32px 24px 56px;
+}
+.detail-layout {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  gap: 32px;
+  padding-top: 24px;
+}
+.detail-image {
+  height: 426px;
+  overflow: hidden;
+  border: 1px solid rgba(201, 168, 76, 0.14);
+  background: #181410;
+}
+.detail-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lot-number {
+  margin: 8px 0 16px;
+  color: rgba(140, 125, 94, 0.5);
+  font:
+    500 12px/16px "DM Mono",
+    monospace;
+  text-align: center;
+}
+.source-card {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid rgba(201, 168, 76, 0.07);
+  background: #181410;
+}
+.source-card span,
+.fact-grid dt {
+  color: rgba(140, 125, 94, 0.6);
+  font-size: 12px;
+}
+.source-card strong {
+  color: #ede8d8;
+  font-size: 12px;
+  font-weight: 400;
+}
+.detail-category {
+  margin: 0;
+  color: rgba(201, 168, 76, 0.7);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+.detail-content h1 {
+  margin: 4px 0 0;
+  color: #ede8d8;
+  font:
+    700 24px/32px "Noto Serif TC",
+    serif;
+}
+.detail-byline {
+  margin: 4px 0 0;
+  color: #8c7d5e;
+  font-size: 16px;
+}
+.fact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0 0;
+}
+.fact-grid div {
+  padding: 12px;
+  border: 1px solid rgba(201, 168, 76, 0.06);
+  background: #181410;
+}
+.fact-grid dd {
+  margin: 4px 0 0;
+  color: #ede8d8;
+  font-size: 14px;
+  font-weight: 500;
+}
+.locked-insights {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+.insight-card {
+  position: relative;
+  height: 102px;
+  overflow: hidden;
+  padding: 16px;
+  border: 1px solid rgba(201, 168, 76, 0.06);
+  background: #181410;
+}
+.insight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 11, 9, 0.42);
+  backdrop-filter: blur(2px);
+}
+.insight-card header {
+  display: flex;
+  justify-content: space-between;
+  color: rgba(140, 125, 94, 0.55);
+  font-size: 14px;
+}
+.insight-card header img {
+  width: 13px;
+  height: 13px;
+}
+.insight-card i {
+  display: block;
+  width: 75%;
+  height: 12px;
+  margin-top: 11px;
+  background: rgba(42, 34, 24, 0.65);
+}
+.insight-card i + i {
+  width: 50%;
+  margin-top: 6px;
+  opacity: 0.65;
+}
+.detail-subscribe {
+  gap: 8px;
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px;
+  font-size: 14px;
+}
+.detail-subscribe img {
+  width: 14px;
+  height: 14px;
 }
 .lot-card:hover,
 .lot-card:focus-visible {
@@ -390,7 +528,10 @@ button {
   color: #8c7d5e;
   font-size: 12px;
 }
-.back-button img { width: 13px; height: 13px; }
+.back-button img {
+  width: 13px;
+  height: 13px;
+}
 .subscribe-intro {
   padding-top: 32px;
   text-align: center;
@@ -405,11 +546,16 @@ button {
   font-size: 12px;
   letter-spacing: 0.1em;
 }
-.subscribe-intro p img { width: 11px; height: 11px; }
+.subscribe-intro p img {
+  width: 11px;
+  height: 11px;
+}
 .subscribe-intro h1 {
   margin: 0;
   color: #ede8d8;
-  font: 700 30px/36px "Noto Serif TC", serif;
+  font:
+    700 30px/36px "Noto Serif TC",
+    serif;
 }
 .subscribe-intro span {
   display: block;
@@ -434,8 +580,13 @@ button {
   color: #ede8d8;
   text-align: left;
 }
-.plan-card.selected { border-color: #c9a84c; }
-.plan-card:focus-visible { outline: 2px solid #c9a84c; outline-offset: 3px; }
+.plan-card.selected {
+  border-color: #c9a84c;
+}
+.plan-card:focus-visible {
+  outline: 2px solid #c9a84c;
+  outline-offset: 3px;
+}
 .popular {
   position: absolute;
   top: -12px;
@@ -447,21 +598,81 @@ button {
   font-size: 12px;
   white-space: nowrap;
 }
-.plan-name { display: flex; align-items: center; justify-content: space-between; }
-.plan-name strong { font-size: 14px; font-weight: 500; }
-.plan-name img, .plan-name i { width: 16px; height: 16px; }
-.plan-name i { border: 2px solid rgba(201, 168, 76, 0.14); border-radius: 50%; }
-.price { margin-top: 8px; font: 500 20px/28px "DM Mono", monospace; }
-.price strong { font-weight: 500; }
-.price small { color: #8c7d5e; font-size: 12px; font-weight: 400; }
-.plan-card ul { display: grid; gap: 6px; margin: 16px 0 0; padding: 0; list-style: none; }
-.plan-card li { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; }
-.plan-card li img { width: 11px; height: 11px; flex: 0 0 auto; }
-.plan-card li.unavailable { color: rgba(140, 125, 94, 0.4); }
-.subscribe-action { display: grid; justify-items: center; padding-top: 32px; }
-.subscribe-action button { display: flex; align-items: center; gap: 8px; padding: 12px 32px; font-size: 16px; }
-.subscribe-action button img { width: 15px; height: 15px; }
-.subscribe-action p { margin: 12px 0 0; color: rgba(140, 125, 94, 0.5); font-size: 12px; }
+.plan-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.plan-name strong {
+  font-size: 14px;
+  font-weight: 500;
+}
+.plan-name img,
+.plan-name i {
+  width: 16px;
+  height: 16px;
+}
+.plan-name i {
+  border: 2px solid rgba(201, 168, 76, 0.14);
+  border-radius: 50%;
+}
+.price {
+  margin-top: 8px;
+  font:
+    500 20px/28px "DM Mono",
+    monospace;
+}
+.price strong {
+  font-weight: 500;
+}
+.price small {
+  color: #8c7d5e;
+  font-size: 12px;
+  font-weight: 400;
+}
+.plan-card ul {
+  display: grid;
+  gap: 6px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.plan-card li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.plan-card li img {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+}
+.plan-card li.unavailable {
+  color: rgba(140, 125, 94, 0.4);
+}
+.subscribe-action {
+  display: grid;
+  justify-items: center;
+  padding-top: 32px;
+}
+.subscribe-action button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 32px;
+  font-size: 16px;
+}
+.subscribe-action button img {
+  width: 15px;
+  height: 15px;
+}
+.subscribe-action p {
+  margin: 12px 0 0;
+  color: rgba(140, 125, 94, 0.5);
+  font-size: 12px;
+}
 @media (max-width: 800px) {
   .topbar,
   .journey {
@@ -479,8 +690,19 @@ button {
   .hero-copy {
     font-size: 12px;
   }
-  .plan-grid { grid-template-columns: 1fr; }
-  .plan-card { min-height: 0; }
+  .plan-grid {
+    grid-template-columns: 1fr;
+  }
+  .plan-card {
+    min-height: 0;
+  }
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+  .detail-art-column {
+    width: min(420px, 100%);
+    margin: 0 auto;
+  }
 }
 @media (max-width: 480px) {
   .wordmark {
